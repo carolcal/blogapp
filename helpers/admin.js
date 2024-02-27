@@ -3,8 +3,7 @@ module.exports = {
         if(req.isAuthenticated() && req.user.admin === 1){
             return next();
         }
-        console.log('não é admin')
-        req.flash("error_msg", "Você precisa ser um administrador para acessar essa página!")
+        req.flash("error_msg", "You must be an administrator to access this page!")
         res.redirect("/")
     }
 }

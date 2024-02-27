@@ -3,33 +3,33 @@ const mongoose = require("mongoose")
 const bcrypt = require("bcryptjs")
 
 //Model de usuário
-require("../models/Usuario")
-const Usuario = mongoose.model("usuarios")
+require("../models/User")
+const User = mongoose.model("users")
 
 module.exports = function (passport) {
-    passport.use(new localStrategy({ usernameField: 'email', passwordField: "senha" }, (email, senha, done) => {
-        Usuario.findOne({ email: email }).lean().then((usuario) => {
-            if (!usuario) {
-                return done(null, false, { message: "Esta conta não existe." })
+    passport.use(new localStrategy({ usernameField: 'email', passwordField: "password" }, (email, password, done) => {
+        User.findOne({ email: email }).lean().then((user) => {
+            if (!user) {
+                return done(null, false, { message: "This account doesn't exist!" })
             }
-            bcrypt.compare(senha, usuario.senha, (erro, batem) => {
+            bcrypt.compare(password, user.password, (erro, batem) => {
                 if (batem) {
-                    return done(null, usuario)
+                    return done(null, user)
                 } else {
-                    return done(null, false, { message: "Senha incorreta." })
+                    return done(null, false, { message: "Incorrect Password!" })
                 }
             })
         })
     }))
-    //Salvar dados usuario na sessão assim que ele logar
-    passport.serializeUser((usuario, done) => {
-        done(null, usuario._id)
+    //Salvar dados user na sessão assim que ele logar
+    passport.serializeUser((user, done) => {
+        done(null, user._id)
     })
     passport.deserializeUser((id, done) => {
-        Usuario.findById(id).then((usuario) => {
-            done(null, usuario)
+        User.findById(id).then((user) => {
+            done(null, user)
         }).catch(() => {
-            done(null, false, { message: 'algo deu errado' })
+            done(null, false, { message: 'Something went wrong!' })
         })
     })
 

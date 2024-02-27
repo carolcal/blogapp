@@ -1,0 +1,25 @@
+<div class="card">
+    <div class="card-header">
+        <h4 class="text-center mt-1">Create your account</h4>
+    </div>
+    <div class="card-body">
+
+        {{#each errors}}
+            <div class="alert alert-danger">{{text}}</div>
+        {{else}}
+
+        {{/each}}
+
+        <form action="" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" name="name" class="form-control mb-2" required>
+            <label for="email">Email:</label>
+            <input type="email" name="email" class="form-control mb-2" required>
+            <label for="password">Password:</label>
+            <input type="password" name="password" class="form-control mb-2" required>
+            <label for="password2">Repita a Password:</label>
+            <input type="password" name="password2" class="form-control mb-2" required>
+            <button type="submit" class="btn btn-success mt-2">Create Account</button>
+        </form>
+    </div>
+</div>

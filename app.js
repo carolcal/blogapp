@@ -7,17 +7,17 @@
     const mongoose = require("mongoose")
     const session = require("express-session")
     const flash = require("connect-flash")
-    require("./models/Postagem")
-    const Postagem = mongoose.model("postagens")
-    require("./models/Categoria")
-    const Categoria = mongoose.model("categorias")
-    const usuarios = require("./routes/usuario")
+    require("./models/Post")
+    const Post = mongoose.model("posts")
+    require("./models/Category")
+    const Category = mongoose.model("categories")
+    const users = require("./routes/user")
     const passport = require("passport")
     require("./config/auth")(passport)
 
 
-//Configurações
-    //Sessão
+//Settings
+    //Session
         app.use(session({
             secret: "secret",
             resave: true,
@@ -26,7 +26,7 @@
         app.use(passport.initialize())
         app.use(passport.session())
         app.use(flash())
-    //MIddleware
+    //Middleware
         app.use((req, res, next) => {
             res.locals.success_msg = req.flash("success_msg")
             res.locals.error_msg = req.flash("error_msg")
@@ -43,74 +43,74 @@
     //Mongoose
         mongoose.Promise = global.Promise;
         mongoose.connect("mongodb://localhost/blogapp").then(() => {
-            console.log("Conectado ao mongo")
+            console.log("Connected to mongodb.")
         }).catch((erro) => {
-            console.log("Erro ao se conectar: " + erro)
+            console.log("Error connecting: " + erro)
         })
     //Public
         app.use(express.static(path.join(__dirname, "public")))
 
-//Rotas
+//Routes
     app.get('/', (req, res) => {
-        Postagem.find().lean().populate("categoria").sort({date: "desc"}).then((postagens) => {
-            res.render("index", {postagens})
+        Post.find().lean().populate("category").sort({date: "desc"}).then((posts) => {
+            console.log(posts)
+            res.render("index", {posts})
         }).catch(() => {
-            req.flash("error_msg", "Houve um erro buscando postagens")
+            req.flash("error_msg", "There was an error searching for posts.")
             res.redirect("/404")
         })
     })
-    app.get('/postagem/:slug', (req, res) => {
-        Postagem.findOne({slug: req.params.slug}).lean().then((postagem) => {
-            if(postagem){
-                res.render("postagem/index", {postagem})
+    app.get('/post/:slug', (req, res) => {
+        Post.findOne({slug: req.params.slug}).lean().then((post) => {
+            if(post){
+                res.render("post/index", {post})
             }else{
-                console.log('nao tem post')
-                req.flash("error_msg", "Esta postagem não existe")
+                req.flash("error_msg", "This post doesn't exist.")
                 res.redirect("/")
             }
         }).catch(() => {
-            req.flash("error_msg", "Houve um erro interno")
+            req.flash("error_msg", "Internal Error.")
             res.redirect("/")
         })
     })
 
-    app.get('/categorias', (req, res) => {
-        Categoria.find().lean().then((categorias) => {
-            res.render("categorias/index", {categorias})
+    app.get('/categories', (req, res) => {
+        Category.find().lean().then((categories) => {
+            res.render("categories/index", {categories})
         }).catch(() => {
-            req.flash("error_msg", "Erro ao listar categorias")
+            req.flash("error_msg", "There was an error searching for categories.")
             res.redirect("/")
         })
     })
 
-    app.get('/categorias/:slug', (req, res) => {
-        Categoria.findOne({slug: req.params.slug}).then((categoria) => {
-            if(categoria){
-                Postagem.find({categoria: categoria._id}).lean().then((postagens) => {
-                    res.render("categorias/postagens", {postagens, categoria})
+    app.get('/categories/:slug', (req, res) => {
+        Category.findOne({slug: req.params.slug}).then((category) => {
+            if(category){
+                Post.find({category: category._id}).lean().then((posts) => {
+                    res.render("categories/posts", {posts, category})
                 }).catch(() => {
-                    req.flash("error_msg", "Erro ao listar postagens")
+                    req.flash("error_msg", "There was an error searching for posts.")
                     res.redirect("/")
                 })
 
             }else{
-                req.flash("error_msg", "Esta categoria não existe")
+                req.flash("error_msg", "This category doesn't exist.")
                 res.redirect("/")
             }
         }).catch(() => {
-            req.flash("error_msg", "Erro ao carregar postagens dessa categoria")
+            req.flash("error_msg", "There was an error searching for this category posts.")
             res.redirect("/")
         })
     })
 
     app.get('/404', (req, res) => {
-        res.send("Erro 404!")
+        res.send("404 Error!")
     })
     app.use('/admin', admin)
-    app.use("/usuarios", usuarios)
+    app.use("/users", users)
 
-//Outros
+//Others
     const PORT = 8081
     app.listen(PORT, () => {
-        console.log("Servidor rodando!")
+        console.log("Server running!")
     })

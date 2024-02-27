@@ -1,28 +1,27 @@
 <div class="bg-light p-5 rounded-lg">
-    <h1 class="display-4">Bem-vindo ao blog do Node</h1>
-    <p class="lead">Este é um blog simples desenvolvido com Node.js + Express + MongoDB.</p>
+    <h1 class="display-4">Welcome to my blog!</h1>
+    <p class="lead">This is a blog developed with Node.js + Express + MongoDB.</p>
     <hr class="my-4">
-    <p>Aqui você poderá ler postagens sobre programação.</p>
-    <a class="btn btn-primary btn-lg" href="#" role="button">Crie uma conta</a>
+    <p> Here I will post things I've learned in my journey in development.</p>
 </div>
 
 <hr>
 
-<h2>Postagens recentes: </h2>
-{{#each postagens}}
+<h2>Recent posts: </h2>
+{{#each posts}}
 <div class="card mt-4">
     <div class="card-body">
-        <h4>{{titulo}}</h4>
-        <p>{{descricao}}</p>
-        <a href="/postagem/{{slug}}">
-            <button class="btn btn-success">Leia Mais</button>
+        <h4>{{title}}</h4>
+        <p>{{description}}</p>
+        <a href="/post/{{slug}}">
+            <button class="btn btn-success">Read More</button>
         </a>
         <hr>
-        <small>Categoria: {{categoria.nome}}</small>
+        <small>Category: {{category.name}}</small>
         <br>
-        <small>Data de publicação: {{date}}</small>
+        <small>Publish Date: {{date}}</small>
     </div>
 </div>
 {{else}}
-<h5 class="mt-3">Nenhuma postagem registrada.</h5>
+<h5 class="mt-3">No post registered.</h5>
 {{/each}}
