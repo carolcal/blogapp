@@ -1,0 +1,29 @@
+<div class="card">
+    <div class="card-header">
+        <h4 class="text-center mt-1">Edit User</h4>
+    </div>
+    <div class="card-body">
+
+        {{#each errors}}
+            <div class="alert alert-danger">{{text}}</div>
+        {{else}}
+
+        {{/each}}
+        {{user.admin}}
+        <form action="/admin/users/edit" method="POST">
+            <input type="hidden" name="id" value="{{user._id}}">
+            <label for="name">Name:</label>
+            <input type="text" name="name" class="form-control mb-2" value="{{user.name}}" required>
+            <label for="email">Email:</label>
+            <input type="email" name="email" class="form-control mb-2" value="{{user.email}}" required>
+            {{!-- <label for="adm">Administrator:</label>
+            <input type="checkbox" name="adm" class="mb-3" value="{{user.adm}}"> --}}
+            <br>
+            <label for="password">New Password:</label>
+            <input type="password" name="password" class="form-control mb-2">
+            <label for="password2">Repeat a Password:</label>
+            <input type="password" name="password2" class="form-control mb-2">
+            <button type="submit" class="btn btn-success mt-2">Edit User</button>
+        </form>
+    </div>
+</div>

@@ -53,7 +53,6 @@
 //Routes
     app.get('/', (req, res) => {
         Post.find().lean().populate("category").sort({date: "desc"}).then((posts) => {
-            console.log(posts)
             res.render("index", {posts})
         }).catch(() => {
             req.flash("error_msg", "There was an error searching for posts.")
@@ -86,8 +85,9 @@
     app.get('/categories/:slug', (req, res) => {
         Category.findOne({slug: req.params.slug}).then((category) => {
             if(category){
+                console.log(category)
                 Post.find({category: category._id}).lean().then((posts) => {
-                    res.render("categories/posts", {posts, category})
+                    res.render("categories/posts", {category: category.name, posts})
                 }).catch(() => {
                     req.flash("error_msg", "There was an error searching for posts.")
                     res.redirect("/")

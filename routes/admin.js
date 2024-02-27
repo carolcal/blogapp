@@ -3,17 +3,20 @@ const router = express.Router()
 const mongoose = require("mongoose")
 require("../models/Category")
 require("../models/Post")
+require("../models/User")
 const Category = mongoose.model("categories")
 const Post = mongoose.model("posts")
+const User = mongoose.model("users")
 const { admin } = require("../helpers/admin")
+const bcrypt = require("bcryptjs")
 
 router.get('/', admin, (req, res) => {
     const options = [
-        {name: "Categories", id:"category", route:"/admin/categories"},
-        {name: "Posts", id:"post", route:"/admin/posts"},
-        {name: "Users", id:"user", route:"/admin/users"},
+        { name: "Categories", id: "category", route: "/admin/categories" },
+        { name: "Posts", id: "post", route: "/admin/posts" },
+        { name: "Users", id: "user", route: "/admin/users" },
     ]
-    res.render("admin/index", {options})
+    res.render("admin/index", { options })
 })
 
 //Categories
@@ -75,7 +78,7 @@ router.get('/categories/edit/:id', admin, (req, res) => {
 })
 
 router.post('/categories/edit', admin, (req, res) => {
-    Category.findOne({ _id: req.body.id }).then((category) => {
+    Category.findOne({ _id: req.body.id }).lean().then((category) => {
         category.name = req.body.name
         category.slug = req.body.slug
         category.save().then(() => {
@@ -91,7 +94,7 @@ router.post('/categories/edit', admin, (req, res) => {
     })
 })
 
-router.post("/categories/deletar", admin, (req, res) => {
+router.post("/categories/delete", admin, (req, res) => {
     Category.deleteOne({ _id: req.body.id }).then(() => {
         req.flash("success_msg", "Category deleted with sucess!")
         res.redirect("/admin/categories")
@@ -106,8 +109,7 @@ router.post("/categories/deletar", admin, (req, res) => {
 router.get("/posts", admin, (req, res) => {
     Post.find().lean().populate("category").sort({ data: "desc" }).then((posts) => {
         res.render("admin/posts", { posts })
-    }).catch((errors) => {
-        console.log(errors)
+    }).catch(() => {
         req.flash("error_msg", "There was an error searching for posts.")
         res.redirect("/admin")
     })
@@ -185,7 +187,7 @@ router.post('/posts/edit', admin, (req, res) => {
     })
 })
 
-router.get("/posts/deletar/:id", admin, (req, res) => {
+router.get("/posts/delete/:id", admin, (req, res) => {
     Post.deleteOne({ _id: req.params.id }).then(() => {
         req.flash("success_msg", "Post deleted with success!")
         res.redirect("/admin/posts")
@@ -195,6 +197,68 @@ router.get("/posts/deletar/:id", admin, (req, res) => {
     })
 })
 
+//Users
+
+router.get('/users', admin, (req, res) => {
+    User.find().lean().sort({ name: "asc" }).then((users) => {
+        res.render("admin/users", { users })
+    }).catch(() => {
+        req.flash("error_msg", "There was an error searching for users.")
+        req.redirect("/admin")
+    })
+})
+
+router.get('/users/edit/:id', admin, (req, res) => {
+    User.findOne({ _id: req.params.id }).lean().then((user) => {
+        res.render("admin/editUser", { user})
+    }).catch(() => {
+        req.flash("error_msg", "This user doesn't exist!")
+        res.redirect("/admin/users")
+    })
+})
+
+router.post('/users/edit', admin, (req, res) => {
+    let errors = []
+    if (req.body.password) {
+        if (req.body.password.length < 4) {
+            errors.push({ text: "Password is too short" })
+        }
+        if (req.body.password !== req.body.password2) {
+            errors.push({ text: "Passwords are different, try again!" })
+        }
+    }
+    if (errors.length > 0) {
+        res.render("users/signIn", { errors })
+    } else {
+        User.findOne({ _id: req.body.id }).then((user) => {
+            user.name = req.body.name
+            user.email = req.body.email
+            /* user.admin = req.body.admin ? 1 : 0 */
+            if (req.body.password) {
+                let salt = bcrypt.genSaltSync(10)
+                let hash = bcrypt.hashSync(req.body.password, salt)
+                user.password = hash
+            }
+            user.save().then(() => {
+                req.flash("success_msg", "User edited with success!")
+                res.redirect("/admin/users")
+            }).catch(() => {
+                req.flash("error_msg", "There was an error trying to save user's edition!")
+                res.redirect("/admin/users")
+            })
+        })
+    }
+})
+
+router.post("/users/delete", admin, (req, res) => {
+    User.deleteOne({ _id: req.body.id }).then(() => {
+        req.flash("success_msg", "User deleted with sucess!")
+        res.redirect("/admin/users")
+    }).catch(() => {
+        req.flash("error_msg", "There was an error trying to delete user!")
+        res.redirect("/admin/users")
+    })
+})
 
 
 module.exports = router

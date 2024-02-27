@@ -1,14 +1,26 @@
-<h4>Categories</h4>
-{{#each categories}}
-<div class="card mt-4">
+<div class="card">
+    <div class="card-header">
+        <h4>Categories</h4>
+    </div>
     <div class="card-body">
-        <h5>{{name}}</h5>
-        <a href="/categories/{{slug}}">
-            <button class="btn btn-success mt-2">See posts</button>
-        </a>
-        
+        <ul class="list-group">
+            {{#each categories}}
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-6">
+                        <h5 class="mt-1">{{name}}</h5>
+                    </div>
+                    <div class="col-6 text-end">
+                        <a href="/categories/{{slug}}">
+                            <button class="btn btn-success">See posts</button>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            {{else}}
+            <h4 class="mt-3">No category registered.</h4>
+            {{/each}}
+        </ul>
     </div>
 </div>
-{{else}}
-    <h4 class="mt-3">No category registered.</h4>
-{{/each}}

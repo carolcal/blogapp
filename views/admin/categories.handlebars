@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-6">
-        <h2>Lista de Categories</h2>
+        <h2>Categories List</h2>
     </div>
     <div class="col-6 text-end">
         <a href="/admin/categories/add">
@@ -25,7 +25,7 @@
                         </a>
                     </div>
                     <div class="col-6">
-                        <form action="/admin/categories/deletar" method="POST">
+                        <form action="/admin/categories/delete" method="POST">
                             <input type="hidden" name="id" value={{_id}}>
                             <button type="submit" class="btn btn-danger mt-2">Delete</button>
                         </form>

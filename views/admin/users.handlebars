@@ -1,0 +1,31 @@
+<h2>Users List</h2>
+<ul class="list-group">
+    {{#each users}}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-10">
+                {{#if admin}}
+                <h4 class="mt-2">{{name}} - ADM</h4>
+                {{else}}
+                <h4 class="mt-2">{{name}}</h4>
+                {{/if}}
+            </div>
+            <div class="col-1 text-end">
+                <a href="/admin/users/edit/{{_id}}">
+                    <button class="btn btn-success mt-2">Edit</button>
+                </a>
+            </div>
+            <div class="col-1 text-end">
+                <form action="/admin/users/delete" method="POST">
+                    <input type="hidden" name="id" value={{_id}}>
+                    <button type="submit" class="btn btn-danger mt-2">Delete</button>
+                </form>
+            </div>
+        </div>
+
+    </li>
+
+    {{else}}
+    <h5 class="mt-3">No post registered.</h5>
+    {{/each}}
+</ul>
